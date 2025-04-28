@@ -1,0 +1,31 @@
+!pip install opencv-python
+import cv2  # OpenCV library for image processing
+from google.colab.patches import cv2_imshow  # Used to display images in Colab
+from google.colab import files  # For uploading files
+uploaded = files.upload()  # Opens a file upload dialog
+# Get the uploaded file name
+image_path = list(uploaded.keys())[0]
+
+# Read the uploaded image
+image = cv2.imread(image_path)  # Read image in color
+gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # Convert image to grayscale
+
+# Show the grayscale image
+cv2_imshow(gray_image)
+# Load the pre-trained Haar cascade model for face detection
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+# Detect faces in the grayscale image
+faces = face_cascade.detectMultiScale(gray_image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+# Print number of faces detected
+print(f"Number of faces detected: {len(faces)}")
+# Draw rectangles around detected faces
+for (x, y, w, h) in faces:
+    cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 3)  # Blue rectangle
+
+# Show the image with detected faces
+cv2_imshow(image)
+cv2.imwrite("face_detected.jpg", image)  # Save the processed image
+print("Image with detected faces saved as face_detected.jpg")
+from google.colab import files
+files.download("face_detected.jpg")
